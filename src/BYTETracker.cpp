@@ -51,7 +51,16 @@ vector<STrack> BYTETracker::update(const vector<Object>& objects)
 
 			float score = objects[i].prob;
 
-			STrack strack(STrack::tlbr_to_tlwh(tlbr_), score);
+			int state_id = objects[i].label;
+			string readable_state = objects[i].readable_state;
+			float state_confidence = objects[i].state_confidence;
+			int pictogram_id = objects[i].pictogram_id;
+			float picto_confidence = objects[i].picto_confidence;
+			string readable_pictogram = objects[i].readable_pictogram;
+			float objectness = objects[i].objectness;
+
+			STrack strack(STrack::tlbr_to_tlwh(tlbr_), score, state_id, readable_state, state_confidence, pictogram_id, picto_confidence, readable_pictogram, objectness);
+
 			if (score >= track_thresh)
 			{
 				detections.push_back(strack);

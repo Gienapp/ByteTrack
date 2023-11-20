@@ -20,6 +20,33 @@ STrack::STrack(vector<float> tlwh_, float score)
 	start_frame = 0;
 }
 
+STrack::STrack(vector<float> tlwh_, float score, int state_id, string readable_state, float state_confidence, int pictogram_id, float picto_confidence, string readable_pictogram, float objectness)
+{
+	_tlwh.resize(4);
+	_tlwh.assign(tlwh_.begin(), tlwh_.end());
+
+	is_activated = false;
+	track_id = 0;
+	state = TrackState::New;
+	
+	tlwh.resize(4);
+	tlbr.resize(4);
+
+	static_tlwh();
+	static_tlbr();
+	frame_id = 0;
+	tracklet_len = 0;
+	this->score = score;
+	this->state_id = state_id;
+	this->readable_state = readable_state;
+	this->state_confidence = state_confidence;
+	this->pictogram_id = pictogram_id;
+	this->picto_confidence = picto_confidence;
+	this->readable_pictogram = readable_pictogram;
+	this->objectness = objectness;
+	start_frame = 0;
+}
+
 STrack::~STrack()
 {
 }

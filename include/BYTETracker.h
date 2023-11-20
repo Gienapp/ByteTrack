@@ -7,6 +7,13 @@ struct Object
     cv::Rect_<float> rect;
     int label;
     float prob;
+    string readable_state;
+    float state_confidence;
+    int pictogram_id;
+    float picto_confidence;
+    string readable_pictogram;
+    float objectness;
+
 };
 
 class BYTETracker

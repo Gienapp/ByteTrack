@@ -12,6 +12,8 @@ class STrack
 {
 public:
 	STrack(vector<float> tlwh_, float score);
+	STrack(vector<float> tlwh_, float score, int state_id, string readable_state, float state_confidence, int pictogram_id, float picto_confidence, string readable_pictogram, float objectness);
+
 	~STrack();
 
 	vector<float> static tlbr_to_tlwh(vector<float> &tlbr);
@@ -33,6 +35,14 @@ public:
 	bool is_activated;
 	int track_id;
 	int state;
+	
+	int state_id;
+	string readable_state;
+	int pictogram_id;
+    	float picto_confidence;
+    	string readable_pictogram;
+    	float objectness;
+
 
 	vector<float> _tlwh;
 	vector<float> tlwh;
