@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dataType.h"
-
+namespace ByteTrack{
 namespace byte_kalman
 {
 	class KalmanFilter
@@ -28,4 +28,5 @@ namespace byte_kalman
 		float _std_weight_position;
 		float _std_weight_velocity;
 	};
+}
 }

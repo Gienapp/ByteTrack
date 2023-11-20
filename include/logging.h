@@ -26,6 +26,8 @@
 #include <sstream>
 #include <string>
 
+namespace ByteTrack{
+    
 using Severity = nvinfer1::ILogger::Severity;
 
 class LogStreamConsumerBuffer : public std::stringbuf
@@ -501,3 +503,4 @@ inline LogStreamConsumer LOG_FATAL(const Logger& logger)
 } // anonymous namespace
 
 #endif // TENSORRT_LOGGING_H
+}

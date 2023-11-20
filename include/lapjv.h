@@ -1,3 +1,4 @@
+namespace ByteTrack{
 #ifndef LAPJV_H
 #define LAPJV_H
 
@@ -61,3 +62,4 @@ extern int_t lapjv_internal(
 	int_t *x, int_t *y);
 
 #endif // LAPJV_H
+}

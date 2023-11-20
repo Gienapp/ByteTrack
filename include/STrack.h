@@ -1,27 +1,26 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
+#include "FixedQueue.h"
 #include "kalmanFilter.h"
-
-using namespace cv;
-using namespace std;
+namespace ByteTrack{
 
 enum TrackState { New = 0, Tracked, Lost, Removed };
 
 class STrack
 {
 public:
-	STrack(vector<float> tlwh_, float score);
-	STrack(vector<float> tlwh_, float score, int state_id, string readable_state, float state_confidence, int pictogram_id, float picto_confidence, string readable_pictogram, float objectness);
+	STrack(std::vector<float> tlwh_, float score);
+	STrack(std::vector<float> tlwh_, float score, int state_id, std::string readable_state, float state_confidence, int pictogram_id, float picto_confidence, std::string readable_pictogram, float objectness);
 
 	~STrack();
 
-	vector<float> static tlbr_to_tlwh(vector<float> &tlbr);
-	void static multi_predict(vector<STrack*> &stracks, byte_kalman::KalmanFilter &kalman_filter);
+	std::vector<float> static tlbr_to_tlwh(std::vector<float> &tlbr);
+	void static multi_predict(std::vector<STrack*> &stracks, byte_kalman::KalmanFilter &kalman_filter);
 	void static_tlwh();
 	void static_tlbr();
-	vector<float> tlwh_to_xyah(vector<float> tlwh_tmp);
-	vector<float> to_xyah();
+	std::vector<float> tlwh_to_xyah(std::vector<float> tlwh_tmp);
+	std::vector<float> to_xyah();
 	void mark_lost();
 	void mark_removed();
 	int next_id();
@@ -37,16 +36,19 @@ public:
 	int state;
 	
 	int state_id;
-	string readable_state;
+	std::string readable_state;
+	float state_confidence;
+	ByteTrack::FixedQueue<int, 10> state_queue;
 	int pictogram_id;
-    	float picto_confidence;
-    	string readable_pictogram;
-    	float objectness;
+    float picto_confidence;
+    std::string readable_pictogram;
+	ByteTrack::FixedQueue<int, 10> pictogram_queue;
+    float objectness;
 
 
-	vector<float> _tlwh;
-	vector<float> tlwh;
-	vector<float> tlbr;
+	std::vector<float> _tlwh;
+	std::vector<float> tlwh;
+	std::vector<float> tlbr;
 	int frame_id;
 	int tracklet_len;
 	int start_frame;
@@ -58,3 +60,4 @@ public:
 private:
 	byte_kalman::KalmanFilter kalman_filter;
 };
+}

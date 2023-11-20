@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "lapjv.h"
-
+namespace ByteTrack{
 /** Column-reduction and reduction transfer for a dense cost matrix.
  */
 int_t _ccrrt_dense(const uint_t n, cost_t *cost[],
@@ -340,4 +340,5 @@ int lapjv_internal(
 	FREE(v);
 	FREE(free_rows);
 	return ret;
+}
 }

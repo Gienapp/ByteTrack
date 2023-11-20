@@ -1,6 +1,6 @@
 #include "STrack.h"
-
-STrack::STrack(vector<float> tlwh_, float score)
+namespace ByteTrack{
+STrack::STrack(std::vector<float> tlwh_, float score)
 {
 	_tlwh.resize(4);
 	_tlwh.assign(tlwh_.begin(), tlwh_.end());
@@ -20,7 +20,7 @@ STrack::STrack(vector<float> tlwh_, float score)
 	start_frame = 0;
 }
 
-STrack::STrack(vector<float> tlwh_, float score, int state_id, string readable_state, float state_confidence, int pictogram_id, float picto_confidence, string readable_pictogram, float objectness)
+STrack::STrack(std::vector<float> tlwh_, float score, int state_id, std::string readable_state, float state_confidence, int pictogram_id, float picto_confidence, std::string readable_pictogram, float objectness)
 {
 	_tlwh.resize(4);
 	_tlwh.assign(tlwh_.begin(), tlwh_.end());
@@ -40,9 +40,11 @@ STrack::STrack(vector<float> tlwh_, float score, int state_id, string readable_s
 	this->state_id = state_id;
 	this->readable_state = readable_state;
 	this->state_confidence = state_confidence;
+	this->state_queue.push(state_id);
 	this->pictogram_id = pictogram_id;
 	this->picto_confidence = picto_confidence;
 	this->readable_pictogram = readable_pictogram;
+	this->pictogram_queue.push(pictogram_id);
 	this->objectness = objectness;
 	start_frame = 0;
 }
@@ -56,12 +58,12 @@ void STrack::activate(byte_kalman::KalmanFilter &kalman_filter, int frame_id)
 	this->kalman_filter = kalman_filter;
 	this->track_id = this->next_id();
 
-	vector<float> _tlwh_tmp(4);
+	std::vector<float> _tlwh_tmp(4);
 	_tlwh_tmp[0] = this->_tlwh[0];
 	_tlwh_tmp[1] = this->_tlwh[1];
 	_tlwh_tmp[2] = this->_tlwh[2];
 	_tlwh_tmp[3] = this->_tlwh[3];
-	vector<float> xyah = tlwh_to_xyah(_tlwh_tmp);
+	std::vector<float> xyah = tlwh_to_xyah(_tlwh_tmp);
 	DETECTBOX xyah_box;
 	xyah_box[0] = xyah[0];
 	xyah_box[1] = xyah[1];
@@ -87,7 +89,7 @@ void STrack::activate(byte_kalman::KalmanFilter &kalman_filter, int frame_id)
 
 void STrack::re_activate(STrack &new_track, int frame_id, bool new_id)
 {
-	vector<float> xyah = tlwh_to_xyah(new_track.tlwh);
+	std::vector<float> xyah = tlwh_to_xyah(new_track.tlwh);
 	DETECTBOX xyah_box;
 	xyah_box[0] = xyah[0];
 	xyah_box[1] = xyah[1];
@@ -107,6 +109,11 @@ void STrack::re_activate(STrack &new_track, int frame_id, bool new_id)
 	this->score = new_track.score;
 	if (new_id)
 		this->track_id = next_id();
+
+	this->state_queue.push(new_track.state_id);
+	this->state_id = this->state_queue.most_frequent_element();
+	this->pictogram_queue.push(new_track.pictogram_id);
+	this->pictogram_id = this->pictogram_queue.most_frequent_element();
 }
 
 void STrack::update(STrack &new_track, int frame_id)
@@ -114,7 +121,7 @@ void STrack::update(STrack &new_track, int frame_id)
 	this->frame_id = frame_id;
 	this->tracklet_len++;
 
-	vector<float> xyah = tlwh_to_xyah(new_track.tlwh);
+	std::vector<float> xyah = tlwh_to_xyah(new_track.tlwh);
 	DETECTBOX xyah_box;
 	xyah_box[0] = xyah[0];
 	xyah_box[1] = xyah[1];
@@ -132,6 +139,11 @@ void STrack::update(STrack &new_track, int frame_id)
 	this->is_activated = true;
 
 	this->score = new_track.score;
+
+	this->state_queue.push(new_track.state_id);
+	this->state_id = this->state_queue.most_frequent_element();
+	this->pictogram_queue.push(new_track.pictogram_id);
+	this->pictogram_id = this->pictogram_queue.most_frequent_element();
 }
 
 void STrack::static_tlwh()
@@ -163,21 +175,21 @@ void STrack::static_tlbr()
 	tlbr[3] += tlbr[1];
 }
 
-vector<float> STrack::tlwh_to_xyah(vector<float> tlwh_tmp)
+std::vector<float> STrack::tlwh_to_xyah(std::vector<float> tlwh_tmp)
 {
-	vector<float> tlwh_output = tlwh_tmp;
+	std::vector<float> tlwh_output = tlwh_tmp;
 	tlwh_output[0] += tlwh_output[2] / 2;
 	tlwh_output[1] += tlwh_output[3] / 2;
 	tlwh_output[2] /= tlwh_output[3];
 	return tlwh_output;
 }
 
-vector<float> STrack::to_xyah()
+std::vector<float> STrack::to_xyah()
 {
 	return tlwh_to_xyah(tlwh);
 }
 
-vector<float> STrack::tlbr_to_tlwh(vector<float> &tlbr)
+std::vector<float> STrack::tlbr_to_tlwh(std::vector<float> &tlbr)
 {
 	tlbr[2] -= tlbr[0];
 	tlbr[3] -= tlbr[1];
@@ -206,7 +218,7 @@ int STrack::end_frame()
 	return this->frame_id;
 }
 
-void STrack::multi_predict(vector<STrack*> &stracks, byte_kalman::KalmanFilter &kalman_filter)
+void STrack::multi_predict(std::vector<STrack*> &stracks, byte_kalman::KalmanFilter &kalman_filter)
 {
 	for (int i = 0; i < stracks.size(); i++)
 	{
@@ -218,4 +230,5 @@ void STrack::multi_predict(vector<STrack*> &stracks, byte_kalman::KalmanFilter &
 		stracks[i]->static_tlwh();
 		stracks[i]->static_tlbr();
 	}
+}
 }

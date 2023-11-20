@@ -5,6 +5,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/Dense>
+namespace ByteTrack{
 typedef Eigen::Matrix<float, 1, 4, Eigen::RowMajor> DETECTBOX;
 typedef Eigen::Matrix<float, -1, 4, Eigen::RowMajor> DETECTBOXSS;
 typedef Eigen::Matrix<float, 1, 128, Eigen::RowMajor> FEATURE;
@@ -34,3 +35,4 @@ typedef struct t {
 
 //linear_assignment:
 typedef Eigen::Matrix<float, -1, -1, Eigen::RowMajor> DYNAMICM;
+}
