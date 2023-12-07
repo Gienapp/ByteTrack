@@ -6,22 +6,27 @@ namespace ByteTrack{
 struct Object
 {
     cv::Rect_<float> rect;
-    int label;
     float prob;
-    std::string readable_state;
-    float state_confidence;
-    int pictogram_id;
-    float picto_confidence;
-    std::string readable_pictogram;
-    float objectness;
+	// additional informations from the detections that need to be carried along
+	std::vector<int> label_ids;
+	std::vector<float> confidences;
+	float objectness;
+
+    // int label;
+    // std::string readable_state;
+    // float state_confidence;
+    // int pictogram_id;
+    // float picto_confidence;
+    // std::string readable_pictogram;
+    // float objectness;
 
 };
 
 class BYTETracker
 {
 public:
-	BYTETracker(int frame_rate = 30, int track_buffer = 30);
-	BYTETracker(float track_thresh, float high_thresh, float match_thresh, int frame_rate = 30, int track_buffer = 30);
+	BYTETracker(int track_buffer = 30);
+	BYTETracker(float track_thresh, float high_thresh, float match_thresh, int track_buffer = 30);
 	~BYTETracker();
 
 	std::vector<STrack> update(const std::vector<Object>& objects);

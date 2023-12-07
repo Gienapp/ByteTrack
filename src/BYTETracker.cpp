@@ -2,25 +2,25 @@
 #include <fstream>
 
 namespace ByteTrack{
-BYTETracker::BYTETracker(int frame_rate, int track_buffer)
+BYTETracker::BYTETracker(int track_buffer)
 {
 	m_track_thresh = 0.9;
 	m_high_thresh = 0.975;
 	m_match_thresh = 0.7;
 
 	frame_id = 0;
-	max_time_lost = int(frame_rate / 30.0 * track_buffer);
+	max_time_lost = track_buffer;//int(frame_rate / 30.0 * track_buffer);
 	std::cout << "Init ByteTrack!" << std::endl;
 }
 
-BYTETracker::BYTETracker(float track_thresh, float high_thresh, float match_thresh, int frame_rate, int track_buffer)
+BYTETracker::BYTETracker(float track_thresh, float high_thresh, float match_thresh, int track_buffer)
 {
 	m_track_thresh = track_thresh;
 	m_high_thresh = high_thresh;
 	m_match_thresh = match_thresh;
 
 	frame_id = 0;
-	max_time_lost = int(frame_rate / 30.0 * track_buffer);
+	max_time_lost = track_buffer;//int(frame_rate / 30.0 * track_buffer);
 	std::cout << "Init ByteTrack!" << std::endl;
 }
 
@@ -63,17 +63,9 @@ std::vector<STrack> BYTETracker::update(const std::vector<Object>& objects)
 
 			float score = objects[i].prob;
 
-			int state_id = objects[i].label;
-			std::string readable_state = objects[i].readable_state;
-			float state_confidence = objects[i].state_confidence;
-			int pictogram_id = objects[i].pictogram_id;
-			float picto_confidence = objects[i].picto_confidence;
-			std::string readable_pictogram = objects[i].readable_pictogram;
-			float objectness = objects[i].objectness;
+			STrack strack(STrack::tlbr_to_tlwh(tlbr_), score, objects[i].label_ids, objects[i].confidences, objects[i].objectness);
 
-			STrack strack(STrack::tlbr_to_tlwh(tlbr_), score, state_id, readable_state, state_confidence, pictogram_id, picto_confidence, readable_pictogram, objectness);
-
-			if (score >= m_track_thresh)
+		if (score >= m_track_thresh)
 			{
 				detections.push_back(strack);
 			}

@@ -11,6 +11,7 @@ class STrack
 {
 public:
 	STrack(std::vector<float> tlwh_, float score);
+	STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness);
 	STrack(std::vector<float> tlwh_, float score, int state_id, std::string readable_state, float state_confidence, int pictogram_id, float picto_confidence, std::string readable_pictogram, float objectness);
 
 	~STrack();
@@ -34,17 +35,13 @@ public:
 	bool is_activated;
 	int track_id;
 	int state;
-	
-	int state_id;
-	std::string readable_state;
-	float state_confidence;
-	ByteTrack::FixedQueue<int, 10> state_queue;
-	int pictogram_id;
-    float picto_confidence;
-    std::string readable_pictogram;
-	ByteTrack::FixedQueue<int, 10> pictogram_queue;
-    float objectness;
 
+	// additional information from the detections that need to be carried along to have them at the end
+	std::vector<int> label_ids;
+	std::vector<float> confidences;
+	float objectness;
+
+	std::vector<ByteTrack::FixedQueue<int, 10>> label_queues;
 
 	std::vector<float> _tlwh;
 	std::vector<float> tlwh;
