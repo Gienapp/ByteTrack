@@ -46,19 +46,19 @@ private:
 	std::vector<std::vector<float> > ious(std::vector<std::vector<float> > &atlbrs, std::vector<std::vector<float> > &btlbrs);
 
 	double lapjv(const std::vector<std::vector<float> > &cost, std::vector<int> &rowsol, std::vector<int> &colsol, 
-		bool extend_cost = false, float cost_limit = LONG_MAX, bool return_cost = true);
+		bool extend_cost = false, float cost_limit = static_cast<float>(LONG_MAX), bool return_cost = true);
 
 private:
 
 	float m_track_thresh;
 	float m_high_thresh;
 	float m_match_thresh;
-	int frame_id;
-	int max_time_lost;
+	int m_frame_id;
+	int m_max_time_lost;
 
-	std::vector<STrack> tracked_stracks;
-	std::vector<STrack> lost_stracks;
-	std::vector<STrack> removed_stracks;
-	byte_kalman::KalmanFilter kalman_filter;
+	std::vector<STrack> m_tracked_stracks;
+	std::vector<STrack> m_lost_stracks;
+	std::vector<STrack> m_removed_stracks;
+	byte_kalman::KalmanFilter m_kalman_filter;
 };
 }
