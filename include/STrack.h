@@ -11,7 +11,7 @@ class STrack
 {
 public:
 	STrack(std::vector<float> tlwh_, float score);
-	STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness);
+	STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness, std::uint64_t time_stamp);
 	STrack(std::vector<float> tlwh_, float score, int state_id, std::string readable_state, float state_confidence, int pictogram_id, float picto_confidence, std::string readable_pictogram, float objectness);
 
 	~STrack();
@@ -42,6 +42,8 @@ public:
 	float objectness;
 
 	std::vector<ByteTrack::FixedQueue<int, 10>> label_queues;
+	std::uint64_t track_start_time_stamp;
+	std::uint64_t track_duration;
 
 	std::vector<float> _tlwh;
 	std::vector<float> tlwh;

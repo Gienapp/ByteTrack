@@ -113,6 +113,12 @@ void STrack::re_activate(STrack &new_track, int frame_id, bool new_id)
 	for(int i=0; i<this->label_ids.size(); i++){
 		this->label_queues[i].push(new_track.label_ids[i]);
 		this->label_ids[i] = this->label_queues[i].most_frequent_element();
+		if(this->label_ids[i] == new_track.label_ids[i]){
+			this->track_duration = new_track.track_start_time_stamp - this->track_start_time_stamp;
+		} else{
+			this->track_start_time_stamp = new_track.track_start_time_stamp;
+			this->track_duration = 0;
+		}
 	}
 }
 
@@ -143,6 +149,12 @@ void STrack::update(STrack &new_track, int frame_id)
 	for(int i=0; i<this->label_ids.size(); i++){
 		this->label_queues[i].push(new_track.label_ids[i]);
 		this->label_ids[i] = this->label_queues[i].most_frequent_element();
+		if(this->label_ids[i] == new_track.label_ids[i]){
+			this->track_duration = new_track.track_start_time_stamp - this->track_start_time_stamp;
+		} else{
+			this->track_start_time_stamp = new_track.track_start_time_stamp;
+			this->track_duration = 0;
+		}
 	}
 }
 
