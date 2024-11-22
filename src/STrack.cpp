@@ -20,7 +20,7 @@ STrack::STrack(std::vector<float> tlwh_, float score)
 	start_frame = 0;
 }
 
-STrack::STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness)
+STrack::STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness, int time_stamp)
 {
 	_tlwh.resize(4);
 	_tlwh.assign(tlwh_.begin(), tlwh_.end());
@@ -45,6 +45,7 @@ STrack::STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids
 		this->label_queues.push_back(label_queue);
 	}
 	this->objectness = objectness;
+	this->track_start_time_stamp = time_stamp;
 	
 	start_frame = 0;
 }

@@ -11,7 +11,7 @@ struct Object
 	std::vector<int> label_ids;
 	std::vector<float> confidences;
 	float objectness;
-	std::uint64_t time_stamp;
+	int time_stamp;
 
     // int label;
     // std::string readable_state;

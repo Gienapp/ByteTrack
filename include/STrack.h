@@ -11,7 +11,7 @@ class STrack
 {
 public:
 	STrack(std::vector<float> tlwh_, float score);
-	STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness, std::uint64_t time_stamp);
+	STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness, int time_stamp);
 	STrack(std::vector<float> tlwh_, float score, int state_id, std::string readable_state, float state_confidence, int pictogram_id, float picto_confidence, std::string readable_pictogram, float objectness);
 
 	~STrack();
