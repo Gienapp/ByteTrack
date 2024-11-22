@@ -1,6 +1,6 @@
 #include "STrack.h"
 namespace ByteTrack{
-STrack::STrack(std::vector<float> tlwh_, float score)
+STrack::STrack(std::vector<float> tlwh_, float score_)
 {
 	_tlwh.resize(4);
 	_tlwh.assign(tlwh_.begin(), tlwh_.end());
@@ -16,11 +16,11 @@ STrack::STrack(std::vector<float> tlwh_, float score)
 	static_tlbr();
 	frame_id = 0;
 	tracklet_len = 0;
-	this->score = score;
+	this->score = score_;
 	start_frame = 0;
 }
 
-STrack::STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness, int time_stamp)
+STrack::STrack(std::vector<float> tlwh_, float score_, std::vector<int> label_ids_, std::vector<float> confidences_, float objectness_, int time_stamp_)
 {
 	_tlwh.resize(4);
 	_tlwh.assign(tlwh_.begin(), tlwh_.end());
@@ -36,16 +36,16 @@ STrack::STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids
 	static_tlbr();
 	frame_id = 0;
 	tracklet_len = 0;
-	this->score = score;
-	this->label_ids = label_ids;
-	this->confidences = confidences;
-	for(auto label_id : label_ids){
+	this->score = score_;
+	this->label_ids = label_ids_;
+	this->confidences = confidences_;
+	for(auto label_id : label_ids_){
 		ByteTrack::FixedQueue<int, 10> label_queue;
 		label_queue.push(label_id);
 		this->label_queues.push_back(label_queue);
 	}
-	this->objectness = objectness;
-	this->track_start_time_stamp = time_stamp;
+	this->objectness = objectness_;
+	this->track_start_time_stamp = time_stamp_;
 	
 	start_frame = 0;
 }
@@ -54,9 +54,9 @@ STrack::~STrack()
 {
 }
 
-void STrack::activate(byte_kalman::KalmanFilter &kalman_filter, int frame_id)
+void STrack::activate(byte_kalman::KalmanFilter &kalman_filter_, int frame_id_)
 {
-	this->kalman_filter = kalman_filter;
+	this->kalman_filter = kalman_filter_;
 	this->track_id = this->next_id();
 
 	std::vector<float> _tlwh_tmp(4);
@@ -79,16 +79,16 @@ void STrack::activate(byte_kalman::KalmanFilter &kalman_filter, int frame_id)
 
 	this->tracklet_len = 0;
 	this->state = TrackState::Tracked;
-	if (frame_id == 1)
+	if (frame_id_ == 1)
 	{
 		this->is_activated = true;
 	}
 	//this->is_activated = true;
-	this->frame_id = frame_id;
-	this->start_frame = frame_id;
+	this->frame_id = frame_id_;
+	this->start_frame = frame_id_;
 }
 
-void STrack::re_activate(STrack &new_track, int frame_id, bool new_id)
+void STrack::re_activate(STrack &new_track, int frame_id_, bool new_id)
 {
 	std::vector<float> xyah = tlwh_to_xyah(new_track.tlwh);
 	DETECTBOX xyah_box;
@@ -106,12 +106,12 @@ void STrack::re_activate(STrack &new_track, int frame_id, bool new_id)
 	this->tracklet_len = 0;
 	this->state = TrackState::Tracked;
 	this->is_activated = true;
-	this->frame_id = frame_id;
+	this->frame_id = frame_id_;
 	this->score = new_track.score;
 	if (new_id)
 		this->track_id = next_id();
 
-	for(int i=0; i<this->label_ids.size(); i++){
+	for(std::vector<int>::size_type i=0; i<this->label_ids.size(); i++){
 		this->label_queues[i].push(new_track.label_ids[i]);
 		this->label_ids[i] = this->label_queues[i].most_frequent_element();
 		if(this->label_ids[i] == new_track.label_ids[i]){
@@ -123,9 +123,9 @@ void STrack::re_activate(STrack &new_track, int frame_id, bool new_id)
 	}
 }
 
-void STrack::update(STrack &new_track, int frame_id)
+void STrack::update(STrack &new_track, int frame_id_)
 {
-	this->frame_id = frame_id;
+	this->frame_id = frame_id_;
 	this->tracklet_len++;
 
 	std::vector<float> xyah = tlwh_to_xyah(new_track.tlwh);
@@ -147,7 +147,7 @@ void STrack::update(STrack &new_track, int frame_id)
 
 	this->score = new_track.score;
 
-	for(int i=0; i<this->label_ids.size(); i++){
+	for(std::vector<int>::size_type i=0; i<this->label_ids.size(); i++){
 		this->label_queues[i].push(new_track.label_ids[i]);
 		this->label_ids[i] = this->label_queues[i].most_frequent_element();
 		if(this->label_ids[i] == new_track.label_ids[i]){
@@ -233,7 +233,7 @@ int STrack::end_frame()
 
 void STrack::multi_predict(std::vector<STrack*> &stracks, byte_kalman::KalmanFilter &kalman_filter)
 {
-	for (int i = 0; i < stracks.size(); i++)
+	for (std::vector<ByteTrack::STrack*>::size_type i = 0; i < stracks.size(); i++)
 	{
 		if (stracks[i]->state != TrackState::Tracked)
 		{

@@ -10,9 +10,9 @@ enum TrackState { New = 0, Tracked, Lost, Removed };
 class STrack
 {
 public:
-	STrack(std::vector<float> tlwh_, float score);
-	STrack(std::vector<float> tlwh_, float score, std::vector<int> label_ids, std::vector<float> confidences, float objectness, int time_stamp);
-	STrack(std::vector<float> tlwh_, float score, int state_id, std::string readable_state, float state_confidence, int pictogram_id, float picto_confidence, std::string readable_pictogram, float objectness);
+	STrack(std::vector<float> tlwh_, float score_);
+	STrack(std::vector<float> tlwh_, float score_, std::vector<int> label_ids_, std::vector<float> confidences_, float objectness_, int time_stamp_);
+	//STrack(std::vector<float> tlwh_, float score_, int state_id, std::string readable_state, float state_confidence, int pictogram_id, float picto_confidence, std::string readable_pictogram, float objectness);
 
 	~STrack();
 
@@ -27,9 +27,9 @@ public:
 	int next_id();
 	int end_frame();
 	
-	void activate(byte_kalman::KalmanFilter &kalman_filter, int frame_id);
-	void re_activate(STrack &new_track, int frame_id, bool new_id = false);
-	void update(STrack &new_track, int frame_id);
+	void activate(byte_kalman::KalmanFilter &kalman_filter_, int frame_id_);
+	void re_activate(STrack &new_track, int frame_id_, bool new_id = false);
+	void update(STrack &new_track, int frame_id_);
 
 public:
 	bool is_activated;
@@ -42,8 +42,8 @@ public:
 	float objectness;
 
 	std::vector<ByteTrack::FixedQueue<int, 10>> label_queues;
-	std::uint64_t track_start_time_stamp;
-	std::uint64_t track_duration;
+	int track_start_time_stamp;
+	int track_duration;
 
 	std::vector<float> _tlwh;
 	std::vector<float> tlwh;
